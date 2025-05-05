@@ -17,22 +17,53 @@ npm install -g mockup-name-gen
 ```bash
 mockup-name-gen --count 3 --theme tech
 ```
+With branding identity:
+```bash
+mockup-name-gen --count 1 --theme luxury --identity
+```
+
+## 🛠️ Options
+
+| Option        | Description                                                                                   |
+|--------------|-----------------------------------------------------------------------------------------------|
+| `--count`    | Number of names to generate (default: 1)                                                     |
+| `--theme`    | Theme for the name (default: tech)                                                           |
+| `--identity` | Generate a branding identity with the name (default: false)                                  |
+| `--help`     | Show help information                                                                        |
+| `--version`  | Show version information                                                                     |
 
 ## 📦 Programmatic Use
 
 ```js
-const { generateName } = require('mockup-name-gen');
+const { generateName, generateIdentity } = require('mockup-name-gen');
 
-console.log(generateName('luxury'));
-// Example: RoyalEssencehaus
+const name = generateName('eco');
+const identity = generateIdentity(name, 'eco');
+
+console.log(name);       // Example: BioPlanetloop
+console.log(identity);   // { name, theme, colors, fonts, mood }
 ```
 
 ## 💻 Output
+
+Basic Output:
 
 ```bash
 MetaLogicPort
 QuantumCoreByte
 CyberAiHub
+```
+
+With --identity:
+
+```json
+{
+  "name": "CyberVerseify",
+  "theme": "tech",
+  "colors": ["#0F172A", "#3B82F6", "#1E293B", "#93C5FD", "#F8FAFC"],
+  "fonts": ["Inter", "Roboto Mono", "Space Grotesk"],
+  "mood": ["futuristic", "clean", "bold"]
+}
 ```
 
 ## 🎨 Themes

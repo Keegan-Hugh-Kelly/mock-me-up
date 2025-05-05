@@ -41,6 +41,49 @@ const themes = {
   },
 };
 
+const identities = {
+  tech: {
+    colors: ["#0F172A", "#3B82F6", "#1E293B", "#93C5FD", "#F8FAFC"],
+    fonts: ["Inter", "Roboto Mono", "Space Grotesk"],
+    mood: ["futuristic", "clean", "bold"]
+  },
+  food: {
+    colors: ["#F97316", "#FACC15", "#FDE68A", "#DC2626", "#F3F4F6"],
+    fonts: ["Pacifico", "Quicksand", "Raleway"],
+    mood: ["appetizing", "friendly", "inviting"]
+  },
+  luxury: {
+    colors: ["#1F2937", "#D1D5DB", "#F9FAFB", "#A855F7", "#FCD34D"],
+    fonts: ["Playfair Display", "Cormorant Garamond", "Cinzel"],
+    mood: ["premium", "stylish", "refined"]
+  },
+  gaming: {
+    colors: ["#1E1B4B", "#7C3AED", "#E11D48", "#F43F5E", "#A78BFA"],
+    fonts: ["Orbitron", "Press Start 2P", "Audiowide"],
+    mood: ["intense", "dynamic", "futuristic"]
+  },
+  finance: {
+    colors: ["#1E3A8A", "#3B82F6", "#A7F3D0", "#1E293B", "#10B981"],
+    fonts: ["IBM Plex Sans", "Montserrat", "DM Sans"],
+    mood: ["trustworthy", "stable", "professional"]
+  },
+  health: {
+    colors: ["#34D399", "#10B981", "#E0F2FE", "#60A5FA", "#ECFDF5"],
+    fonts: ["Poppins", "Noto Sans", "Lato"],
+    mood: ["clean", "natural", "energizing"]
+  },
+  pets: {
+    colors: ["#FBBF24", "#FCD34D", "#FDBA74", "#F9A8D4", "#FEF9C3"],
+    fonts: ["Fredoka", "Baloo 2", "Comic Neue"],
+    mood: ["cute", "playful", "friendly"]
+  },
+  eco: {
+    colors: ["#34D399", "#059669", "#D9F99D", "#BBF7D0", "#F0FDF4"],
+    fonts: ["Open Sans", "Work Sans", "Ubuntu"],
+    mood: ["green", "organic", "sustainable"]
+  },
+};
+
 function getRandom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
@@ -50,23 +93,66 @@ function generateName(theme = "tech") {
   return `${getRandom(prefixes)}${getRandom(roots)}${getRandom(suffixes)}`;
 }
 
+function generateIdentity(name, theme = "tech") {
+  const identity = identities[theme] || identities.tech;
+  return {
+    name,
+    theme,
+    colors: identity.colors,
+    fonts: identity.fonts,
+    mood: identity.mood
+  };
+}
+
 function parseArgs() {
   const args = process.argv.slice(2);
-  const options = { count: 1, theme: "tech" };
+  const options = { count: 1, theme: "tech", identity: false };
+
+  if (args.includes("--help")) {
+    console.log(`
+mockup-name-gen
+
+Usage:
+  node mockup-name-gen.js --theme [theme] --count [number] [--identity]
+
+Options:
+  --theme     Theme to use (default: "tech")
+              Available themes: ${Object.keys(themes).join(", ")}
+  --count     Number of names to generate (default: 1)
+  --identity  Show branding identity details (colors, fonts, mood)
+  --help      Show this help message
+
+Example:
+  node mockup-name-gen.js --theme food --count 3 --identity
+    `);
+    process.exit(0);
+  }
 
   args.forEach((arg, i) => {
     if (arg === "--count" && args[i + 1]) options.count = parseInt(args[i + 1]);
     if (arg === "--theme" && args[i + 1]) options.theme = args[i + 1];
+    if (arg === "--identity") options.identity = true;
   });
+
+  if (!themes[options.theme]) {
+    console.warn(`Unknown theme "${options.theme}". Defaulting to "tech".`);
+    console.log(`Available themes: ${Object.keys(themes).join(", ")}`);
+    options.theme = "tech";
+  }
 
   return options;
 }
 
 if (require.main === module) {
-  const { count, theme } = parseArgs();
+  const { count, theme, identity } = parseArgs();
   for (let i = 0; i < count; i++) {
-    console.log(generateName(theme));
+    const name = generateName(theme);
+    if (identity) {
+      console.log(JSON.stringify(generateIdentity(name, theme), null, 2));
+    } else {
+      console.log(name);
+    }
   }
 } else {
-  module.exports = { generateName, themes };
+  module.exports = { generateName, generateIdentity, themes, identities };
 }
